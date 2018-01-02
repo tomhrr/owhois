@@ -1,0 +1,102 @@
+Number,Description,WHOIS,RDAP,Reference,"Registration
+        Date"
+0,Reserved,,,[RFC7607],
+1-6,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+7,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+8-27,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+28,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+29-136,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+137,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+138-172,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+173,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,
+174-223,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+224,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+225-247,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+248-251,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+252-260,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+261,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+262-277,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+278,Assigned by LACNIC,whois.lacnic.net,https://rdap.lacnic.net/rdap/,,
+279-285,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+286,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+287,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+288,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+289-293,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+294,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+295-374,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+375,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+376-377,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+378,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+379-512,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+513,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+514-516,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+517,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+518-527,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+528-529,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+530-539,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+540,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+541-543,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+544,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+545-552,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+553,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+554-558,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+559,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+560-564,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+565,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+566-579,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+580,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+581-589,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+590,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+591-592,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+593,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+594-668,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+669,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+670-675,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+676,Assigned by LACNIC,whois.lacnic.net,https://rdap.lacnic.net/rdap/,,
+677-678,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+679-680,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+681,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,
+682-694,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+695-697,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+698-708,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+709-710,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+711,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+712,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+713-718,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+719,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+720-759,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+760-761,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+762-763,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+764,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+765,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+766,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+767-773,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+774-783,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+784-785,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+786,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+787-788,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,
+789-790,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,
+791-50175,Removed from test data,,,,
+50176-51199,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2009-03-06
+51200-52223,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2009-03-06
+52224-53247,Assigned by LACNIC,whois.lacnic.net,https://rdap.lacnic.net/rdap/,,2009-03-11
+53248-54271,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,2009-04-21
+54272-55295,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,2009-04-21
+55296-56319,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,2009-09-02
+56320-57343,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2011-01-04
+57344-58367,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2011-01-04
+58368-59391,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,2011-08-09
+59392-60415,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2012-03-21
+60416-61439,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2012-03-21
+61440-61951,Assigned by LACNIC,whois.lacnic.net,https://rdap.lacnic.net/rdap/,,2013-06-11
+61952-62463,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2013-09-09
+62464-63487,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,2013-05-30
+63488-63999,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,2013-09-11
+64000-64098,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,2014-09-02
+64099-64197,Assigned by LACNIC,whois.lacnic.net,https://rdap.lacnic.net/rdap/,,2014-09-05
+64198-64296,Assigned by ARIN,whois.arin.net,https://rdap.arin.net/registryhttp://rdap.arin.net/registry,,2015-04-29
+64297-64395,Assigned by APNIC,whois.apnic.net,https://rdap.apnic.net/,,2016-05-25
+64396-64495,Assigned by RIPE NCC,whois.ripe.net,https://rdap.db.ripe.net/,,2016-07-29
+64496-64511,Reserved for use in documentation and sample code,,,[RFC5398],2008-12-03
+64512-65534,Reserved for Private Use,,,[RFC6996],
+65535,Reserved,,,[RFC7300],

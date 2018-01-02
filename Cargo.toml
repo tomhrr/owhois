@@ -1,0 +1,21 @@
+[package]
+name = "owhois"
+version = "0.0.1"
+authors = ["Tom Harrison <tomh5908@gmail.com>"]
+
+[dependencies]
+csv = "1.0.0-beta.5"
+futures = "0.1.17"
+intervaltree = "0.2.3"
+ipnet = "1.0.0"
+lazy_static = "1.0.0"
+rand = "0.3"
+regex = "0.2"
+tokio-core = "0.1"
+tokio-io = "0.1"
+tokio-dns-unofficial = "0.1.1"
+treebitmap = "0.2.2"
+getopts = "0.2"
+log = "0.4"
+env_logger = "0.5.0-rc.1"
+time = "0.1"
