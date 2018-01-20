@@ -1,7 +1,6 @@
 extern crate csv;
 extern crate intervaltree;
 extern crate ipnet;
-extern crate treebitmap;
 extern crate rand;
 extern crate regex;
 

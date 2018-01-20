@@ -51,9 +51,9 @@ The `Usage` instructions above generate CSV files based on the
 delegation data published by IANA and the RIRs, mapping to their Whois
 servers as appropriate.
 
-There is no facility for reloading the mapping data at runtime.  The
-server must be restarted for changes to the mapping data to take
-effect.
+The server monitors the mapping data files to see if any of them has
+changed.  If changes are detected, then the server reloads the mapping
+data.
 
 By default, queries that are not handled by the server will be passed
 through to `whois.iana.org`.  To change the server used for these

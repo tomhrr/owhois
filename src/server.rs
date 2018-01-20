@@ -1,5 +1,6 @@
 extern crate futures;
 extern crate ipnet;
+extern crate notify;
 extern crate time;
 extern crate tokio_core;
 extern crate tokio_dns;
@@ -10,6 +11,8 @@ use super::lookup::ResourceLookup;
 
 use self::futures::{Future, Stream, Poll};
 use self::ipnet::Ipv4Net;
+use self::notify::{PollWatcher, Watcher, RecursiveMode,
+                   DebouncedEvent};
 use self::tokio_core::net::{TcpListener, TcpStream};
 use self::tokio_core::reactor::Core;
 use self::tokio_dns::tcp_connect;
@@ -20,9 +23,45 @@ use std::io::{self, Read, Write, BufReader};
 use std::net::{Shutdown};
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::mpsc::channel;
+use std::thread;
+use std::time::Duration;
 
-pub fn run(context: &'static Context,
-           default_server_option: Option<String>,
+lazy_static! {
+    static ref CONTEXT: Arc<Mutex<Context>> = {
+        Arc::new(Mutex::new(Context::from_files("data/ipv4",
+                                                "data/ipv6",
+                                                "data/asn")))
+    };
+}
+
+fn watch() -> notify::Result<()> {
+    let (tx, rx) = channel();
+
+    let mut watcher = try!(PollWatcher::new(tx, Duration::from_secs(5)));
+
+    watcher.watch("data/ipv4", RecursiveMode::NonRecursive).unwrap();
+    watcher.watch("data/ipv6", RecursiveMode::NonRecursive).unwrap();
+    watcher.watch("data/asn",  RecursiveMode::NonRecursive).unwrap();
+
+    loop {
+        match rx.recv() {
+            Ok(DebouncedEvent::Write(_)) => {
+                let mut context = CONTEXT.lock().unwrap();
+                info!("Reloading data");
+                *context = Context::from_files("data/ipv4",
+                                               "data/ipv6",
+                                               "data/asn");
+                info!("Finished reloading data");
+            },
+            Err(e) => error!("Poll error: {:?}", e),
+            _ => {}
+        }
+    }
+}
+
+pub fn run(default_server_option: Option<String>,
            port_option: Option<String>) {
     let default_server =
         match default_server_option {
@@ -40,11 +79,17 @@ pub fn run(context: &'static Context,
     let remote = core.remote();
 
     info!("Loading data");
-    let _unused =
-        context.ipv4.get_longest_match(
-            Ipv4Net::from_str("0.0.0.0/32").unwrap()
-        );
+    {
+        let _unused =
+            CONTEXT.lock().unwrap().ipv4.get_longest_match(
+                Ipv4Net::from_str("0.0.0.0/32").unwrap()
+            );
+    }
     info!("Finished loading data");
+
+    thread::spawn(move || {
+        let _unused = watch();
+    });
 
     let addr = format!("0.0.0.0:{}", port).parse().unwrap();
     let tcp_listener = TcpListener::bind(&addr, &handle).unwrap();
@@ -62,7 +107,10 @@ pub fn run(context: &'static Context,
                 and_then(move |(line, _)| {
             let mut line_data = line.unwrap();
             let line_data_original = line_data.clone();
-            let server = match context.lookup(&line_data) {
+        let server;
+        {
+            let inner_context = CONTEXT.lock().unwrap();
+            let inner_server  = match inner_context.lookup(&line_data) {
                 Some(server) => {
                     info!("'{}' from {} redirecting to {}",
                           &line_data, client_addr, server);
@@ -74,6 +122,11 @@ pub fn run(context: &'static Context,
                     &default_server_
                 }
             };
+            server = inner_server.to_string();
+        }
+        let end_time1 = time::get_time();
+        let diff = end_time1 - start_time1;
+        info!("lookup: {}ms", diff.num_milliseconds());
             let mut server_spec = server.to_string();
             server_spec.push_str(":43");
             let target: &str = &server_spec;

@@ -10,14 +10,13 @@ mod test_data_iana {
     use ipnet::Ipv6Net;
     use owhois::data::processor::Processor;
     use owhois::lookup::ResourceLookup;
+    use owhois::lookup::Ipv4ResourceLookup;
+    use owhois::lookup::Ipv6ResourceLookup;
+    use owhois::lookup::AsnResourceLookup;
     use owhois::lookup::AsnRange;
     use owhois::lookup::Asn;
     use std::str::FromStr;
-    use std::net::Ipv4Addr;
-    use std::net::Ipv6Addr;
     use std::collections::HashMap;
-    use treebitmap::IpLookupTable;
-    use intervaltree::IntervalTree;
 
     #[test]
     fn iana() {
@@ -35,11 +34,11 @@ mod test_data_iana {
         let mut ipv6_entries: Vec<(Ipv6Net, u32)> = Vec::new();
         let mut asn_entries:  Vec<(AsnRange, u32)> = Vec::new();
 
-        let ipv4_lookup: IpLookupTable<Ipv4Addr, (Option<Ipv4Net>, u32)> =
+        let ipv4_lookup: Ipv4ResourceLookup =
             ResourceLookup::from_iter(ipv4_entries.clone());
-        let ipv6_lookup: IpLookupTable<Ipv6Addr, (Option<Ipv6Net>, u32)> =
+        let ipv6_lookup: Ipv6ResourceLookup =
             ResourceLookup::from_iter(ipv6_entries.clone());
-        let asn_lookup:  IntervalTree<Asn, u32> =
+        let asn_lookup:  AsnResourceLookup =
             ResourceLookup::from_iter(asn_entries.clone());
 
         iana.run("testdata/test_data_iana", &servers,

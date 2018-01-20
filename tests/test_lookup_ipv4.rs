@@ -47,27 +47,27 @@ mod test_lookup {
     fn ipv4_lookup_parents() {
         let ipv4_lookup: Ipv4ResourceLookup =
             ResourceLookup::from_iter(vec![
-                (Ipv4Net::from_str("1.0.0.0/8").unwrap(),  1),
-                (Ipv4Net::from_str("1.0.0.0/16").unwrap(), 2),
-                (Ipv4Net::from_str("1.0.0.0/32").unwrap(), 3),
+                (Ipv4Net::from_str("2.0.0.0/8").unwrap(),  1),
+                (Ipv4Net::from_str("2.0.0.0/16").unwrap(), 2),
+                (Ipv4Net::from_str("2.0.0.0/32").unwrap(), 3),
             ]);
         let value = ipv4_lookup.get_longest_match_value(
-            Ipv4Net::from_str("1.0.0.0/32").unwrap()
+            Ipv4Net::from_str("2.0.0.0/32").unwrap()
         );
         assert_eq!(value, Some(3));
 
         let value = ipv4_lookup.get_longest_match_value(
-            Ipv4Net::from_str("1.0.0.0/31").unwrap()
+            Ipv4Net::from_str("2.0.0.0/31").unwrap()
         );
         assert_eq!(value, Some(2));
 
         let value = ipv4_lookup.get_longest_match_value(
-            Ipv4Net::from_str("1.0.0.0/9").unwrap()
+            Ipv4Net::from_str("2.0.0.0/9").unwrap()
         );
         assert_eq!(value, Some(1));
 
         let value = ipv4_lookup.get_longest_match_value(
-            Ipv4Net::from_str("1.0.0.0/7").unwrap()
+            Ipv4Net::from_str("2.0.0.0/7").unwrap()
         );
         assert_eq!(value, None);
     }
