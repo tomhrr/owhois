@@ -107,26 +107,23 @@ pub fn run(default_server_option: Option<String>,
                 and_then(move |(line, _)| {
             let mut line_data = line.unwrap();
             let line_data_original = line_data.clone();
-        let server;
-        {
-            let inner_context = CONTEXT.lock().unwrap();
-            let inner_server  = match inner_context.lookup(&line_data) {
-                Some(server) => {
-                    info!("'{}' from {} redirecting to {}",
-                          &line_data, client_addr, server);
-                    server
-                },
-                None => {
-                    info!("'{}' from {} not handled, redirecting to {}",
-                          &line_data, client_addr, &default_server_);
-                    &default_server_
-                }
-            };
-            server = inner_server.to_string();
-        }
-        let end_time1 = time::get_time();
-        let diff = end_time1 - start_time1;
-        info!("lookup: {}ms", diff.num_milliseconds());
+            let server;
+            {
+                let inner_context = CONTEXT.lock().unwrap();
+                let inner_server  = match inner_context.lookup(&line_data) {
+                    Some(server) => {
+                        info!("'{}' from {} redirecting to {}",
+                              &line_data, client_addr, server);
+                        server
+                    },
+                    None => {
+                        info!("'{}' from {} not handled, redirecting to {}",
+                              &line_data, client_addr, &default_server_);
+                        &default_server_
+                    }
+                };
+                server = inner_server.to_string();
+            }
             let mut server_spec = server.to_string();
             server_spec.push_str(":43");
             let target: &str = &server_spec;
