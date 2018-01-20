@@ -37,7 +37,7 @@ fn to_u32(address: Ipv4Addr) -> u32 {
 }
 
 fn ipv4_add(address: Ipv4Addr, value: u32) -> Ipv4Addr {
-    Ipv4Addr::from(to_u32(address) + value)
+    Ipv4Addr::from(to_u32(address).wrapping_add(value))
 }
 
 fn ipv6_add(address: Ipv6Addr, value: u32) -> Ipv6Addr {
