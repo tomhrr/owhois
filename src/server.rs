@@ -63,11 +63,12 @@ fn watch() -> notify::Result<()> {
                         info!("Detected change to mapping data, waiting {}s before reloading",
                               RELOAD_DELAY);
                         thread::sleep(Duration::from_secs(RELOAD_DELAY));
-                        let mut context = CONTEXT.lock().unwrap();
                         info!("Reloading data");
-                        *context = Context::from_files("data/ipv4",
-                                                       "data/ipv6",
-                                                       "data/asn");
+                        let new_context = Context::from_files("data/ipv4",
+                                                              "data/ipv6",
+                                                              "data/asn");
+                        let mut context = CONTEXT.lock().unwrap();
+                        *context = new_context;
                         info!("Finished reloading data");
                     });
                 }
