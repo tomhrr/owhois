@@ -66,6 +66,9 @@ impl Context {
             .map(|i| i.unwrap())
             .for_each(|i| { let range  = i.get(0).unwrap();
                             let server = i.get(1).unwrap();
+                            if server.is_empty() {
+                                return;
+                            }
                             ipv4_entries.push(
                                 (Ipv4Net::from_str(range).unwrap(),
                                  *(servers.get(server).unwrap()))
@@ -81,6 +84,9 @@ impl Context {
             .map(|i| i.unwrap())
             .for_each(|i| { let range  = i.get(0).unwrap();
                             let server = i.get(1).unwrap();
+                            if server.is_empty() {
+                                return;
+                            }
                             ipv6_entries.push(
                                 (Ipv6Net::from_str(range).unwrap(),
                                  *(servers.get(server).unwrap()))
@@ -96,6 +102,9 @@ impl Context {
             .map(|i| i.unwrap())
             .for_each(|i| { let range = i.get(0).unwrap();
                             let server = i.get(1).unwrap();
+                            if server.is_empty() {
+                                return;
+                            }
                             let els: Vec<&str> = range.split("-").collect();
                             let start = u64::from_str(els.get(0).unwrap()).unwrap();
                             let end   = u64::from_str(els.get(1).unwrap()).unwrap();
