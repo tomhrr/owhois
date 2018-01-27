@@ -1,7 +1,6 @@
 extern crate futures;
 extern crate ipnet;
 extern crate notify;
-extern crate time;
 extern crate tokio_core;
 extern crate tokio_dns;
 extern crate tokio_io;
@@ -21,12 +20,16 @@ use self::tokio_io::io::{copy, shutdown, lines, write_all};
 
 use std::io::{self, Read, Write, BufReader};
 use std::net::{Shutdown};
+use std::ops::Sub;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::mpsc::channel;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
+
+const RELOAD_DELAY: u64 = 15;
+const POLL_PERIOD:  u64 = 5;
 
 lazy_static! {
     static ref CONTEXT: Arc<Mutex<Context>> = {
@@ -39,26 +42,46 @@ lazy_static! {
 fn watch() -> notify::Result<()> {
     let (tx, rx) = channel();
 
-    let mut watcher = try!(PollWatcher::new(tx, Duration::from_secs(5)));
+    let mut watcher =
+        try!(PollWatcher::new(tx, Duration::from_secs(POLL_PERIOD)));
 
     watcher.watch("data/ipv4", RecursiveMode::NonRecursive).unwrap();
     watcher.watch("data/ipv6", RecursiveMode::NonRecursive).unwrap();
     watcher.watch("data/asn",  RecursiveMode::NonRecursive).unwrap();
 
+    let mut last_event_time = Instant::now();
+
     loop {
         match rx.recv() {
             Ok(DebouncedEvent::Write(_)) => {
-                let mut context = CONTEXT.lock().unwrap();
-                info!("Reloading data");
-                *context = Context::from_files("data/ipv4",
-                                               "data/ipv6",
-                                               "data/asn");
-                info!("Finished reloading data");
+                let current_event_time = Instant::now();
+                let difference = current_event_time.sub(last_event_time);
+                let test_duration = Duration::from_secs(RELOAD_DELAY);
+                if difference.ge(&test_duration) {
+                    last_event_time = Instant::now();
+                    thread::spawn(|| {
+                        info!("Detected change to mapping data, waiting {}s before reloading",
+                              RELOAD_DELAY);
+                        thread::sleep(Duration::from_secs(RELOAD_DELAY));
+                        let mut context = CONTEXT.lock().unwrap();
+                        info!("Reloading data");
+                        *context = Context::from_files("data/ipv4",
+                                                       "data/ipv6",
+                                                       "data/asn");
+                        info!("Finished reloading data");
+                    });
+                }
             },
             Err(e) => error!("Poll error: {:?}", e),
             _ => {}
         }
     }
+}
+
+fn duration_to_ms(duration: Duration) -> u64 {
+    let ms_secs: u64 = duration.as_secs() * 1000;
+    let ns_secs: u64 = (duration.subsec_nanos() / 100000) as u64;
+    ms_secs + ns_secs
 }
 
 pub fn run(default_server_option: Option<String>,
@@ -96,7 +119,7 @@ pub fn run(default_server_option: Option<String>,
     info!("Listening on port {}", port);
 
     let server = tcp_listener.incoming().for_each(move |(client, client_addr)| {
-        let start_time = time::get_time();
+        let start_time = Instant::now();
         let (client_reader, client_writer) = client.split();
         let buf_reader = BufReader::new(client_reader);
         let remote_ = remote.clone();
@@ -135,11 +158,11 @@ pub fn run(default_server_option: Option<String>,
                 write_all(server_writer, line_data).and_then(move |(socket, _)| {
                     copy(server_reader, client_writer)
                         .and_then(move |(n, _, client_writer)| {
-                            let end_time = time::get_time();
+                            let end_time = Instant::now();
                             let duration = end_time - start_time;
                             info!("'{}' from {} completed ({}ms)",
                                   &line_data_original, client_addr,
-                                  duration.num_milliseconds());
+                                  duration_to_ms(duration));
 
                             shutdown(client_writer).map(move |_| n).join(
                                 shutdown(socket).map(move |_| n))
