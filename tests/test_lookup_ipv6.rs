@@ -71,4 +71,56 @@ mod test_lookup {
         );
         assert_eq!(value, None);
     }
+
+    #[test]
+    fn ipv6_lookup_bounds() {
+        let ipv6_lookup: Ipv6ResourceLookup =
+            ResourceLookup::from_iter(vec![
+                (Ipv6Net::from_str("::/128").unwrap(), 1),
+                (Ipv6Net::from_str("::/8").unwrap(), 2),
+                (Ipv6Net::from_str("ff00::/8").unwrap(), 3),
+                (Ipv6Net::from_str("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128").unwrap(), 4),
+            ]);
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("::/128").unwrap()
+        );
+        assert_eq!(value, Some(1));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("::1/128").unwrap()
+        );
+        assert_eq!(value, Some(2));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("::/127").unwrap()
+        );
+        assert_eq!(value, Some(2));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("::/8").unwrap()
+        );
+        assert_eq!(value, Some(2));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("::/7").unwrap()
+        );
+        assert_eq!(value, None);
+
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128").unwrap()
+        );
+        assert_eq!(value, Some(4));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe/128").unwrap()
+        );
+        assert_eq!(value, Some(3));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffe/127").unwrap()
+        );
+        assert_eq!(value, Some(3));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("ff00::/8").unwrap()
+        );
+        assert_eq!(value, Some(3));
+        let value = ipv6_lookup.get_longest_match_value(
+            Ipv6Net::from_str("fe00::/7").unwrap()
+        );
+        assert_eq!(value, None);
+    }
 }

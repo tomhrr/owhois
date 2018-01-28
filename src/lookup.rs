@@ -36,48 +36,72 @@ fn to_u32(address: Ipv4Addr) -> u32 {
     return value;
 }
 
-fn ipv4_add(address: Ipv4Addr, value: u32) -> Ipv4Addr {
-    Ipv4Addr::from(to_u32(address).wrapping_add(value))
+fn ipv4_increment(address: Ipv4Addr) -> Ipv4Addr {
+    Ipv4Addr::from(to_u32(address).wrapping_add(1))
 }
 
-fn ipv6_add(address: Ipv6Addr, value: u32) -> Ipv6Addr {
-    let result: Ipv6Addr =
-        (Emu128::from(address).saturating_add(Emu128::from(value))).into();
-    result
+fn ipv6_increment(address: Ipv6Addr) -> Ipv6Addr {
+    let as_num = Emu128::from(address);
+    if as_num == Emu128::max_value() {
+        Emu128::min_value().into()
+    } else {
+        as_num.saturating_add(Emu128::from(1)).into()
+    }
+}
+
+fn ipv6_decrement(address: Ipv6Addr) -> Ipv6Addr {
+    let as_num = Emu128::from(address);
+    if as_num == Emu128::min_value() {
+        Emu128::max_value().into()
+    } else {
+        as_num.saturating_sub(Emu128::from(1)).into()
+    }
+}
+
+pub struct Ipv4IntervalTree {
+    interval_tree: IntervalTree<Ipv4Addr, u32>,
+    last_values:   Vec<(Range<Ipv4Addr>, u32)>,
 }
 
 impl ResourceLookup<Ipv4Net, u32>
-        for IntervalTree<Ipv4Addr, u32> {
+        for Ipv4IntervalTree {
     fn get_longest_match(&self, net: Ipv4Net)
             -> Option<(Option<Ipv4Net>, u32)> {
-        let range_end = ipv4_add(net.broadcast(), 1);
+        let range_end = ipv4_increment(net.broadcast());
         let iter =
             match net.prefix_len() == net.max_prefix_len() {
-                true  => IntervalTree::query_point(self, net.addr()),
-                false => IntervalTree::query(self, Range {
+                true  => IntervalTree::query_point(&self.interval_tree, net.addr()),
+                false => IntervalTree::query(&self.interval_tree, Range {
                                                        start: net.addr(),
                                                        end:   range_end
                                                    })
             };
-        let mut response: Vec<_> =
+        let mut matching_last_values: Vec<(Range<Ipv4Addr>, u32)> =
+            self.last_values.iter().filter(|v| {
+                v.0.start <= net.addr()
+            }).map(|v| { v.clone() }).collect();
+        let mut response: Vec<(Range<Ipv4Addr>, u32)> =
             iter.filter(|i| {  (i.range.start <= net.addr())
-                            && (i.range.end   >= range_end) })
+                            && (to_u32(i.range.end).wrapping_sub(1) >= to_u32(net.broadcast())) })
+                .map(|i| { (Range { start: i.range.start,
+                                    end: i.range.end }, i.value) })
                 .collect();
+        response.append(&mut matching_last_values);
         response.sort_by(
-            |a, b| { let a_size = to_u32(a.range.end) - to_u32(a.range.start);
-                     let b_size = to_u32(b.range.end) - to_u32(b.range.start);
+            |a, b| { let a_size = to_u32(a.0.end).wrapping_sub(to_u32(a.0.start));
+                     let b_size = to_u32(b.0.end).wrapping_sub(to_u32(b.0.start));
                      a_size.cmp(&b_size) }
         );
 
         match response.len() >= 1 {
             true => {
                 let entry = response.get(0).unwrap();
-                let range = &entry.range;
-                let host_count = to_u32(range.end) - to_u32(range.start);
+                let range = &entry.0;
+                let host_count = to_u32(range.end).wrapping_sub(to_u32(range.start));
                 let prefix_length: u32 = 32 - ((host_count as f32).log2() as u32);
 
                 Some((Some(Ipv4Net::new(range.start, prefix_length as u8).unwrap()),
-                     entry.value))
+                     entry.1))
             },
             false => None
         }
@@ -92,39 +116,66 @@ impl ResourceLookup<Ipv4Net, u32>
     }
 
     fn from_iter<I: IntoIterator<Item=(Ipv4Net, u32)>>(values: I)
-            -> IntervalTree<Ipv4Addr, u32> {
-        FromIterator::from_iter(
-            values.into_iter()
-                .map(|(r, v)| {
+            -> Ipv4IntervalTree  {
+        let interval_tree: IntervalTree<Ipv4Addr, u32> =
+            FromIterator::from_iter(
+                values.into_iter()
+                    .map(|(r, v)| {
                         (Range { start: r.addr(),
-                                 end:   ipv4_add(r.broadcast(), 1) }, v)})
-        )
+                                 end:   ipv4_increment(r.broadcast()) }, v)})
+            );
+        Ipv4IntervalTree {
+            last_values:
+                interval_tree.iter()
+                    .filter(|v| { v.range.end == Ipv4Addr::new(0, 0, 0, 0) })
+                    .map(|v| { (Range { start: v.range.start,
+                                        end: v.range.end }, v.value) })
+                    .collect(),
+            interval_tree: interval_tree,
+        }
     }
 }
 
+pub struct Ipv6IntervalTree {
+    interval_tree: IntervalTree<Ipv6Addr, u32>,
+    last_values:   Vec<(Range<Ipv6Addr>, u32)>,
+}
+
 impl ResourceLookup<Ipv6Net, u32>
-        for IntervalTree<Ipv6Addr, u32> {
+        for Ipv6IntervalTree {
     fn get_longest_match(&self, net: Ipv6Net)
             -> Option<(Option<Ipv6Net>, u32)> {
-        let range_end = ipv6_add(net.broadcast(), 1);
+        let range_end = ipv6_increment(net.broadcast());
         let iter =
             match net.prefix_len() == net.max_prefix_len() {
-                true  => IntervalTree::query_point(self, net.addr()),
-                false => IntervalTree::query(self, Range {
+                true  => IntervalTree::query_point(&self.interval_tree, net.addr()),
+                false => IntervalTree::query(&self.interval_tree, Range {
                                                        start: net.addr(),
                                                        end:   range_end
                                                    })
             };
-        let mut response: Vec<_> =
+
+        let mut matching_last_values: Vec<(Range<Ipv6Addr>, u32)> =
+            self.last_values.iter().filter(|v| {
+                v.0.start <= net.addr()
+            }).map(|v| { v.clone() }).collect();
+        eprintln!("{:?} -> {:?}", net, matching_last_values);
+
+        let mut response: Vec<(Range<Ipv6Addr>, u32)> =
             iter.filter(|i| { (i.range.start <= net.addr())
-                           && (i.range.end   >= net.broadcast()) })
+                           &&
+                            (ipv6_decrement(i.range.end) >=
+                            net.broadcast()) })
+                .map(|i| { (Range { start: i.range.start,
+                                    end: i.range.end }, i.value) })
                 .collect();
+        response.append(&mut matching_last_values);
         response.sort_by(
-            |a, b| { let a_start = Emu128::from(a.range.start);
-                     let a_end   = Emu128::from(a.range.end);
+            |a, b| { let a_start = Emu128::from(a.0.start);
+                     let a_end   = Emu128::from(ipv6_decrement(a.0.end));
                      let a_size  = a_end.saturating_sub(a_start);
-                     let b_start = Emu128::from(b.range.start);
-                     let b_end   = Emu128::from(b.range.end);
+                     let b_start = Emu128::from(b.0.start);
+                     let b_end   = Emu128::from(ipv6_decrement(b.0.end));
                      let b_size  = b_end.saturating_sub(b_start);
                      a_size.cmp(&b_size) }
         );
@@ -132,7 +183,7 @@ impl ResourceLookup<Ipv6Net, u32>
         match response.len() >= 1 {
             true => {
                 let entry = response.get(0).unwrap();
-                let range = &entry.range;
+                let range = &entry.0;
                 let start = Emu128::from(range.start);
                 let end   = Emu128::from(range.start);
 
@@ -144,7 +195,7 @@ impl ResourceLookup<Ipv6Net, u32>
                 }
 
                 Some((Some(Ipv6Net::new(range.start, prefix_length as u8).unwrap()),
-                     entry.value))
+                     entry.1))
             },
             false => None
         }
@@ -159,14 +210,26 @@ impl ResourceLookup<Ipv6Net, u32>
     }
 
     fn from_iter<I: IntoIterator<Item=(Ipv6Net, u32)>>(values: I)
-            -> IntervalTree<Ipv6Addr, u32> {
-        FromIterator::from_iter(
-            values.into_iter()
-                .map(|(r, v)| {
-                    (Range { start: r.addr(),
-                             end:   ipv6_add(r.broadcast(), 1) }, v)
-                })
-        )
+            -> Ipv6IntervalTree {
+        let interval_tree: IntervalTree<Ipv6Addr, u32> =
+            FromIterator::from_iter(
+                values.into_iter()
+                    .map(|(r, v)| {
+                        (Range { start: r.addr(),
+                                 end:   ipv6_increment(r.broadcast()) }, v)
+                    })
+            );
+        Ipv6IntervalTree {
+            last_values:
+                interval_tree.iter()
+                    .filter(|v| { v.range.end == Ipv6Addr::new(0, 0,
+                    0, 0, 0, 0, 0, 0
+                    ) })
+                    .map(|v| { (Range { start: v.range.start,
+                                        end: v.range.end }, v.value) })
+                    .collect(),
+            interval_tree: interval_tree,
+        }
     }
 }
 
@@ -242,6 +305,6 @@ impl ResourceLookup<AsnRange, u32>
     }
 }
 
-pub type Ipv4ResourceLookup = IntervalTree<Ipv4Addr, u32>;
-pub type Ipv6ResourceLookup = IntervalTree<Ipv6Addr, u32>;
+pub type Ipv4ResourceLookup = Ipv4IntervalTree;
+pub type Ipv6ResourceLookup = Ipv6IntervalTree;
 pub type AsnResourceLookup  = IntervalTree<Asn, u32>;
