@@ -81,7 +81,7 @@ fn watch() -> notify::Result<()> {
 
 fn duration_to_ms(duration: Duration) -> u64 {
     let ms_secs: u64 = duration.as_secs() * 1000;
-    let ns_secs: u64 = (duration.subsec_nanos() / 100000) as u64;
+    let ns_secs: u64 = (duration.subsec_nanos() / 1000000) as u64;
     ms_secs + ns_secs
 }
 
