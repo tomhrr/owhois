@@ -81,14 +81,14 @@ fn parse_asn16_iana_data(directory: &str,
             match range.contains("-") {
                 true => {
                     let nums: Vec<&str> = range.split("-").collect();
-                    let start = u64::from_str(nums.get(0).unwrap()).unwrap();
-                    let end   = u64::from_str(nums.get(1).unwrap()).unwrap();
+                    let start = u32::from_str(nums.get(0).unwrap()).unwrap();
+                    let end   = u32::from_str(nums.get(1).unwrap()).unwrap();
                     entries.push((AsnRange { start: Asn { value: start },
                                              end:   Asn { value: end + 1 } },
                                   index));
                 },
                 false => {
-                    let num = u64::from_str(range).unwrap();
+                    let num = u32::from_str(range).unwrap();
                     entries.push((AsnRange { start: Asn { value: num },
                                              end:   Asn { value: num + 1 } },
                                   index));
@@ -114,8 +114,8 @@ fn parse_asn32_iana_data(directory: &str,
             match range.contains("-") {
                 true => {
                     let nums: Vec<&str> = range.split("-").collect();
-                    let start = u64::from_str(nums.get(0).unwrap()).unwrap();
-                    let end   = u64::from_str(nums.get(1).unwrap()).unwrap();
+                    let start = u32::from_str(nums.get(0).unwrap()).unwrap();
+                    let end   = u32::from_str(nums.get(1).unwrap()).unwrap();
                     if start >= 65536 {
                         entries.push((AsnRange { start: Asn { value: start },
                                                  end:   Asn { value: end + 1 } },
@@ -123,10 +123,10 @@ fn parse_asn32_iana_data(directory: &str,
                     }
                 },
                 false => {
-                    let num = u64::from_str(range).unwrap();
+                    let num = u32::from_str(range).unwrap();
                     if num >= 65536 {
                         entries.push((AsnRange { start: Asn { value: num },
-                                                 end:   Asn { value: num + 1 } },
+                                                 end:   Asn { value: num.wrapping_add(1) } },
                                       index));
                     }
                 }

@@ -253,7 +253,7 @@ impl ResourceLookup<Ipv6Net, u32>
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]
 pub struct Asn {
-    pub value: u64
+    pub value: u32
 }
 
 impl Add for Asn {
@@ -276,29 +276,44 @@ pub struct AsnRange {
     pub end: Asn,
 }
 
+pub struct AsnIntervalTree {
+    interval_tree: IntervalTree<Asn, u32>,
+    last_values:   Vec<(AsnRange, u32)>,
+}
+
 impl ResourceLookup<AsnRange, u32>
-        for IntervalTree<Asn, u32> {
+        for AsnIntervalTree {
     fn get_longest_match(&self, asrange: AsnRange)
             -> Option<(Option<AsnRange>, u32)> {
+        let tree = &self.interval_tree;
         let difference = (asrange.end.value - 1) - asrange.start.value;
         let iter =
             match difference == 0 {
-                true  => IntervalTree::query_point(self, asrange.start),
-                false => IntervalTree::query(self, Range {
+                true  => IntervalTree::query_point(tree, asrange.start),
+                false => IntervalTree::query(tree, Range {
                                                     start: asrange.start,
                                                     end: asrange.end
                                                    })
             };
-        let mut response: Vec<_> =
-            iter.map(|i| { (AsnRange { start: i.range.start,
-                                       end:   i.range.end },
-                            i.value) })
-                .filter(|i| { (i.0.start <= asrange.start)
-                           && (i.0.end   >= asrange.end) })
+
+        let mut response: Vec<(AsnRange, u32)> =
+            iter.filter(|i| {    (i.range.start <= asrange.start)
+                              && (i.range.end.value.wrapping_sub(1)
+                               >= asrange.end.value.wrapping_sub(1)) })
+                .map(|i| { (AsnRange { start: i.range.start,
+                                       end:   i.range.end }, i.value) })
                 .collect();
+        let mut matching_last_values =
+            self.last_values
+                .iter()
+                .filter(|i| { i.0.start <= asrange.start })
+                .map(|i| { i.clone() })
+                .collect();
+        response.append(&mut matching_last_values);
         response.sort_by(|a, b| { let a_diff = a.0.end - a.0.start;
                                   let b_diff = b.0.end - b.0.start;
                                   a_diff.cmp(&b_diff) });
+
         match response.len() >= 1 {
             true => { Some((Some(response.get(0).unwrap().0),
                             response.get(0).unwrap().1)) }
@@ -315,14 +330,24 @@ impl ResourceLookup<AsnRange, u32>
     }
 
     fn from_iter<I: IntoIterator<Item=(AsnRange, u32)>>(values: I)
-            -> IntervalTree<Asn, u32> {
-        FromIterator::from_iter(
-            values.into_iter()
-                .map(|(r, v)| { (Range { start: r.start, end: r.end }, v)})
-        )
+            -> AsnIntervalTree {
+        let interval_tree: IntervalTree<Asn, u32> =
+            FromIterator::from_iter(
+                values.into_iter()
+                    .map(|(r, v)| { (Range { start: r.start, end: r.end }, v)})
+            );
+        AsnIntervalTree {
+            last_values:
+                interval_tree.iter()
+                    .filter(|i| { i.range.end == Asn { value: 0 } })
+                    .map(|i| { (AsnRange { start: i.range.start,
+                                           end:   i.range.end }, i.value) })
+                    .collect(),
+            interval_tree: interval_tree,
+        }
     }
 }
 
 pub type Ipv4ResourceLookup = Ipv4IntervalTree;
 pub type Ipv6ResourceLookup = Ipv6IntervalTree;
-pub type AsnResourceLookup  = IntervalTree<Asn, u32>;
+pub type AsnResourceLookup  = AsnIntervalTree;

@@ -120,8 +120,8 @@ fn handle_asn<T: ResourceLookup<AsnRange, u32>>(
 
     let asn_str = record.get(3).unwrap();
     let count = record.get(4).unwrap();
-    if let Ok(start_asn) = u64::from_str(asn_str) {
-        let end_asn = start_asn + (u64::from_str(count).unwrap());
+    if let Ok(start_asn) = u32::from_str(asn_str) {
+        let end_asn = start_asn + (u32::from_str(count).unwrap());
         let asn_range = AsnRange { start: Asn { value: start_asn },
                                    end:   Asn { value: end_asn } };
         match asn_lookup.get_longest_match(asn_range) {

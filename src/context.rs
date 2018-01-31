@@ -106,8 +106,8 @@ impl Context {
                                 return;
                             }
                             let els: Vec<&str> = range.split("-").collect();
-                            let start = u64::from_str(els.get(0).unwrap()).unwrap();
-                            let end   = u64::from_str(els.get(1).unwrap()).unwrap();
+                            let start = u32::from_str(els.get(0).unwrap()).unwrap();
+                            let end   = u32::from_str(els.get(1).unwrap()).unwrap();
                             asn_entries.push(
                                 (AsnRange { start: Asn { value: start },
                                             end:   Asn { value: end + 1 } },
@@ -165,8 +165,8 @@ impl Context {
         if let Some(captures) = asn_regex.captures(value) {
             if let Ok(asn_value) = u32::from_str(captures.get(1).unwrap().as_str()) {
                 return self.asn.get_longest_match_value(
-                    AsnRange{ start: Asn { value: asn_value as u64 },
-                              end:   Asn { value: (asn_value as u64) + 1 }}
+                    AsnRange{ start: Asn { value: asn_value as u32 },
+                              end:   Asn { value: (asn_value as u32) + 1 }}
                 );
             }
         }
@@ -176,8 +176,8 @@ impl Context {
             if let Ok(asn_value_start) = u32::from_str(captures.get(1).unwrap().as_str()) {
                 if let Ok(asn_value_end) = u32::from_str(captures.get(2).unwrap().as_str()) {
                     return self.asn.get_longest_match_value(
-                        AsnRange { start: Asn { value: asn_value_start as u64 },
-                                   end:   Asn { value: asn_value_end as u64 } }
+                        AsnRange { start: Asn { value: asn_value_start as u32 },
+                                   end:   Asn { value: asn_value_end as u32 } }
                     );
                 }
             }
