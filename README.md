@@ -34,6 +34,15 @@ supports the following types of queries:
     / # exit
     $ docker run -v $(pwd)/data:/data -p 4343:4343 -e RUST_LOG=info owhois
 
+    # With Docker (Docker Hub).
+    $ docker pull tomhrr/owhois:latest
+    $ mkdir data
+    $ docker run -it -v $(pwd)/data:/data tomhrr/owhois:latest /bin/sh
+    / # get-public-data
+    / # process-public-data
+    / # exit
+    $ docker run -v $(pwd)/data:/data -p 4343:4343 -e RUST_LOG=info tomhrr/owhois:latest
+
     # Example usage.
     $ whois -hlocalhost -p4343 1.0.0.0/8
 
