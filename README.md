@@ -43,7 +43,13 @@ supports the following types of queries:
     / # exit
     $ docker run -v $(pwd)/data:/data -p 4343:4343 -e RUST_LOG=info tomhrr/owhois:latest
 
-    # Example usage.
+    # With Helm.  By default, this will refresh the address data once
+    # per day.
+    $ cd chart/owhois
+    $ helm package owhois
+    $ helm install owhois
+
+    # Example client usage.
     $ whois -hlocalhost -p4343 1.0.0.0/8
 
 ### Configuration

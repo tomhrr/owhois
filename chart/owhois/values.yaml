@@ -1,0 +1,24 @@
+replicaCount: 2
+
+image:
+  repository: tomhrr/owhois
+  tag: 0.0.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 4343
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 16Mi
+  requests:
+    cpu: 500m
+    memory: 16Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+refreshSeconds: 86400

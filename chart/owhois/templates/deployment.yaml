@@ -1,0 +1,65 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "owhois.fullname" . }}
+  labels:
+    app: {{ template "owhois.name" . }}
+    chart: {{ template "owhois.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "owhois.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "owhois.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: data-processor
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          env:
+            - name: REFRESH_SECONDS
+              value: "{{ .Values.refreshSeconds }}"
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do sleep ${REFRESH_SECONDS}; get-public-data && process-public-data; done"]
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: whois
+              containerPort: 4343
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          env:
+            - name: RUST_LOG
+              value: info
+          command: ["/bin/sh"]
+          args: ["-c", "get-public-data && process-public-data && owhois"]
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
