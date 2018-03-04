@@ -2,22 +2,22 @@
 set -e
 
 mkdir -p data/iana
-wget https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.csv -O data/iana/ipv4-address-space.csv
-wget https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.csv -O data/iana/ipv6-unicast-address-assignments.csv
-wget https://www.iana.org/assignments/as-numbers/as-numbers-1.csv -O data/iana/as-numbers-1.csv
-wget https://www.iana.org/assignments/as-numbers/as-numbers-2.csv -O data/iana/as-numbers-2.csv
+curl -f -s -S https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.csv > data/iana/ipv4-address-space.csv
+curl -f -s -S https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.csv > data/iana/ipv6-unicast-address-assignments.csv
+curl -f -s -S https://www.iana.org/assignments/as-numbers/as-numbers-1.csv > data/iana/as-numbers-1.csv
+curl -f -s -S https://www.iana.org/assignments/as-numbers/as-numbers-2.csv > data/iana/as-numbers-2.csv
 
 mkdir -p data/afrinic
-wget http://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-extended-latest -O data/afrinic/delegated-afrinic-extended-latest
+curl -f -s -S http://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-extended-latest > data/afrinic/delegated-afrinic-extended-latest
 
 mkdir -p data/apnic
-wget http://ftp.apnic.net/pub/stats/apnic/delegated-apnic-extended-latest -O data/apnic/delegated-apnic-extended-latest
+curl -f -s -S http://ftp.apnic.net/pub/stats/apnic/delegated-apnic-extended-latest > data/apnic/delegated-apnic-extended-latest
 
 mkdir -p data/arin
-wget http://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest -O data/arin/delegated-arin-extended-latest
+curl -f -s -S http://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest > data/arin/delegated-arin-extended-latest
 
 mkdir -p data/lacnic
-wget http://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest -O data/lacnic/delegated-lacnic-extended-latest
+curl -f -s -S http://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest > data/lacnic/delegated-lacnic-extended-latest
 
 mkdir -p data/ripe
-wget http://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest -O data/ripe/delegated-ripencc-extended-latest
+curl -f -s -S http://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest > data/ripe/delegated-ripencc-extended-latest
