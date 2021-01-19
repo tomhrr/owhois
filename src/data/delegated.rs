@@ -26,7 +26,7 @@ pub struct Delegated {}
 fn largest_prefix_length(address: Ipv4Addr) -> u32 {
     let num = to_u32(address);
     let mut length = 8;
-    while (num % (u32::pow(2, (32 - length)))) != 0 {
+    while num % (u32::pow(2, 32 - length)) != 0 {
         length = length + 1;
     }
     return length;
@@ -44,7 +44,7 @@ fn to_prefixes(address: Ipv4Addr, hosts: u32) -> Vec<(Ipv4Addr, u8)> {
                 largest_prefix_length(current_address));
         prefixes.push((current_address, new_prefix_length as u8));
 
-        let new_hosts = u32::pow(2, (32 - new_prefix_length));
+        let new_hosts = u32::pow(2, 32 - new_prefix_length);
         remaining_hosts = remaining_hosts - new_hosts;
 
         current_address = Ipv4Addr::from(to_u32(current_address) + new_hosts);

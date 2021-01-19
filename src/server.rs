@@ -2,7 +2,6 @@ extern crate futures;
 extern crate ipnet;
 extern crate notify;
 extern crate tokio_core;
-extern crate tokio_dns;
 extern crate tokio_io;
 
 use super::context::Context;
@@ -14,12 +13,11 @@ use self::notify::{PollWatcher, Watcher, RecursiveMode,
                    DebouncedEvent};
 use self::tokio_core::net::{TcpListener, TcpStream};
 use self::tokio_core::reactor::Core;
-use self::tokio_dns::tcp_connect;
 use self::tokio_io::{AsyncRead, AsyncWrite};
 use self::tokio_io::io::{copy, shutdown, lines, write_all};
 
 use std::io::{self, Read, Write, BufReader};
-use std::net::{Shutdown};
+use std::net::{Shutdown, ToSocketAddrs};
 use std::ops::Sub;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -125,6 +123,7 @@ pub fn run(default_server_option: Option<String>,
         let buf_reader = BufReader::new(client_reader);
         let remote_ = remote.clone();
         let default_server_ = default_server.to_owned();
+        let handle_inner = handle.clone();
         let handler = lines(buf_reader)
                 .into_future()
                 .map_err(|e| e.0).
@@ -151,7 +150,9 @@ pub fn run(default_server_option: Option<String>,
             let mut server_spec = server.to_string();
             server_spec.push_str(":43");
             let target: &str = &server_spec;
-            let server = tcp_connect(target, remote_);
+            let socket_addr =
+                target.to_socket_addrs().unwrap().next().unwrap();
+            let server = TcpStream::connect(&socket_addr, &handle_inner);
             server.and_then(move |server| {
                 let (server_reader, server_writer) = server.split();
                 line_data.push_str("\r\n");

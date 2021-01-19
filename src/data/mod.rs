@@ -27,7 +27,7 @@ use std::str::FromStr;
 
 fn run_processors(directory:  &str,
                   servers:    &HashMap<String, u32>,
-                  processors: Vec<Box<Processor>>,
+                  processors: Vec<Box<dyn Processor>>,
                   ipv4_path:  &str,
                   ipv6_path:  &str,
                   asn_path:   &str) {
@@ -69,9 +69,16 @@ fn run_processors(directory:  &str,
 
     let mut output_file = File::create(asn_path).unwrap();
     asn_entries.iter().for_each(|&(ref asn_range, index)| {
+        /* Account for overflow in the last ASN. */
+        let final_asn =
+            if asn_range.end.value == 0 {
+                4294967295
+            } else {
+                asn_range.end.value - 1
+            };
         let line = format!("{}-{},{}\n",
                            asn_range.start.value,
-                           asn_range.end.value - 1,
+                           final_asn,
                            get_reverse_server(index));
         output_file.write_all(line.as_bytes()).unwrap();
     });

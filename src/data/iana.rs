@@ -39,7 +39,7 @@ fn parse_ipv4_iana_data(directory: &str,
             let prefix_length = u32::from_str(address.get(1).unwrap()).unwrap();
 
             entries.push((Ipv4Net::new(Ipv4Addr::new(first_octet,0,0,0),
-                                       (prefix_length as u8)).unwrap(),
+                                       prefix_length as u8).unwrap(),
                           index));
         });
 }
