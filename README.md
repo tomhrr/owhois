@@ -1,6 +1,6 @@
 ## owhois
 
-[![Build Status](https://travis-ci.org/tomhrr/owhois.png)](https://travis-ci.org/tomhrr/owhois)
+[![Build Status](https://github.com/tomhrr/owhois/workflows/build/badge.svg?branch=master)](https://github.com/tomhrr/owhois/actions)
 
 owhois is a Whois proxy server for IP address and ASN queries.  It
 supports the following types of queries:

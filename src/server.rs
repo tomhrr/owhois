@@ -41,7 +41,7 @@ fn watch() -> notify::Result<()> {
     let (tx, rx) = channel();
 
     let mut watcher =
-        try!(PollWatcher::new(tx, Duration::from_secs(POLL_PERIOD)));
+        PollWatcher::new(tx, Duration::from_secs(POLL_PERIOD))?;
 
     watcher.watch("data/ipv4", RecursiveMode::NonRecursive).unwrap();
     watcher.watch("data/ipv6", RecursiveMode::NonRecursive).unwrap();
@@ -98,7 +98,6 @@ pub fn run(default_server_option: Option<String>,
 
     let mut core = Core::new().unwrap();
     let handle = core.handle();
-    let remote = core.remote();
 
     info!("Loading data");
     {
@@ -121,7 +120,6 @@ pub fn run(default_server_option: Option<String>,
         let start_time = Instant::now();
         let (client_reader, client_writer) = client.split();
         let buf_reader = BufReader::new(client_reader);
-        let remote_ = remote.clone();
         let default_server_ = default_server.to_owned();
         let handle_inner = handle.clone();
         let handler = lines(buf_reader)
@@ -204,7 +202,7 @@ impl AsyncRead for MyTcpStream {}
 
 impl AsyncWrite for MyTcpStream {
     fn shutdown(&mut self) -> Poll<(), io::Error> {
-        try!(self.0.shutdown(Shutdown::Write));
+        self.0.shutdown(Shutdown::Write)?;
         Ok(().into())
     }
 }
